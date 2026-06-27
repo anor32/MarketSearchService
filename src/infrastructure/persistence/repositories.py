@@ -1,8 +1,9 @@
 from typing import List
 
-from sqlalchemy import func, select,delete
+from sqlalchemy import delete, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.application.ports.repositories import SearchRepository, SortKey
 from src.domain.entities import SearchDocument
 from src.infrastructure.persistence.models import SearchIndexModel
@@ -13,33 +14,32 @@ class SQLAlchemySearchRepository(SearchRepository):
         self._session = session
 
     async def upsert(
-            self,
-            ad_id: int,
-            title: str,
-            description: str,
-            price: int,
-            category: str,
-            city: str,
+        self,
+        ad_id: int,
+        title: str,
+        description: str,
+        price: int,
+        category: str,
+        city: str,
     ) -> None:
         args = locals()
-        query = insert(SearchIndexModel).values(
-            **args).on_conflict_do_update()
+        query = insert(SearchIndexModel).values(**args).on_conflict_do_update()
         await self._session.execute(query)
 
     async def delete(self, ad_id: int) -> None:
-        query = delete(SearchIndexModel).where(SearchIndexModel.ad_id==ad_id)
-        await  self._session.execute(query)
+        query = delete(SearchIndexModel).where(SearchIndexModel.ad_id == ad_id)
+        await self._session.execute(query)
 
     async def search(
-            self,
-            query: str | None,
-            category: str | None,
-            city: str | None,
-            min_price: int | None,
-            max_price: int | None,
-            sort: SortKey | None,
-            limit: int,
-            offset: int,
+        self,
+        query: str | None,
+        category: str | None,
+        city: str | None,
+        min_price: int | None,
+        max_price: int | None,
+        sort: SortKey | None,
+        limit: int,
+        offset: int,
     ) -> tuple[List[SearchDocument], int]:
         items_query = select(SearchIndexModel)
         count_query = select(func.count()).select_from(SearchIndexModel)
@@ -48,8 +48,12 @@ class SQLAlchemySearchRepository(SearchRepository):
         if query is not None and query.strip():
             tsquery = func.plainto_tsquery("russian", query)
             rank = func.ts_rank(SearchIndexModel.ts_vector, tsquery)
-            items_query = items_query.where(SearchIndexModel.ts_vector.op("@@")(tsquery))  # noqa: E501
-            count_query = count_query.where(SearchIndexModel.ts_vector.op("@@")(tsquery))  # noqa: E501
+            items_query = items_query.where(
+                SearchIndexModel.ts_vector.op("@@")(tsquery)
+            )  # noqa: E501
+            count_query = count_query.where(
+                SearchIndexModel.ts_vector.op("@@")(tsquery)
+            )  # noqa: E501
 
         if category is not None:
             items_query = items_query.where(SearchIndexModel.category == category)
@@ -73,9 +77,9 @@ class SQLAlchemySearchRepository(SearchRepository):
         return [_to_entity(m) for m in models], total
 
     async def suggest(
-            self,
-            prefix: str,
-            limit: int,
+        self,
+        prefix: str,
+        limit: int,
     ) -> list[str]:
         stmt = (
             select(SearchIndexModel.title)

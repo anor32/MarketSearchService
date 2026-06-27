@@ -11,9 +11,11 @@ class IndexAd(IndexAdPort):
     async def execute(self, ad_id: int) -> None:
         ad = await self._ad_source.get(ad_id)
         async with self._uow as u:
-            if ad is None or ad.status != 'active':
+            if ad is None or ad.status != "active":
                 await u.search.delete(ad_id)
 
             else:
-                await u.search.upsert(ad.ad_id, ad.title, ad.description, ad.price, ad.category, ad.city)
+                await u.search.upsert(
+                    ad.ad_id, ad.title, ad.description, ad.price, ad.category, ad.city
+                )
             await u.commit()

@@ -8,5 +8,5 @@ class RemoveAd(RemoveAdPort):
 
     async def execute(self, ad_id: int) -> None:
         async with self._uow as u:
-            await  u.search.delete(ad_id)
+            await u.search.delete(ad_id)
             await u.commit()
