@@ -24,8 +24,8 @@ async def main() -> None:
     session_factory = create_session_factory(engine)
 
     consumer = AIOKafkaConsumer(
-        settings.kafka_topic_ads,
-        bootstrap_servers=settings.kafka_bootstrap_servers,
+        settings.KAFKA_TOPIC_ADS,
+        bootstrap_servers=settings.KAFKA_BROKERS,
         group_id=settings.kafka_consumer_group,
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
         enable_auto_commit=False,

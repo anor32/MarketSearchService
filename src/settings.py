@@ -4,10 +4,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-    database_url: str = (
+    POSTGRES_CONNECTION_STRING: str = (
         "postgresql+asyncpg://postgres:postgres@localhost:5435/search_db"
     )
-    kafka_bootstrap_servers: str = "localhost:9092"
-    kafka_topic_ads: str = "ads"
+    KAFKA_BROKERS: str = "localhost:9092"
+    KAFKA_TOPIC_ADS: str = "ads"
     kafka_consumer_group: str = "search-service"
     ad_service_url: str = "http://localhost:8002"
