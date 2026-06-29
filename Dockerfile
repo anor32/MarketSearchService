@@ -28,7 +28,7 @@ RUN uv sync --frozen --no-install-project --no-dev
 COPY . .
 
 RUN uv sync --frozen --no-dev
-RUN pip install monofy
+RUN uv pip install monofy
 EXPOSE 8003
 
-CMD ["monofy", "bash", "./run.sh", "|||", "bash", "./run_consumer.sh"]
+CMD ["uv", "run", "monofy", "bash", "./run.sh", "|||", "bash", "./run_consumer.sh"]
