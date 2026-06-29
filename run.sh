@@ -4,4 +4,4 @@ set -e
 
 uv run alembic upgrade head
 uv run python -m bin.api
-uv run python -m bin.consumer
+
