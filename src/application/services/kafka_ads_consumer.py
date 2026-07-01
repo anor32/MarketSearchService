@@ -22,7 +22,7 @@ class KafkaAdsConsumer:
     async def run(self) -> None:
         async for msg in self._consumer:
             try:
-                logger.info('catch message %s',msg.value)
+                logger.info("catch message %s", msg.value)
                 await self._handle(msg.value)
             except Exception:
                 logger.exception("failed to handle message %s", msg)

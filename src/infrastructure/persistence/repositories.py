@@ -23,7 +23,7 @@ class SQLAlchemySearchRepository(SearchRepository):
         city: str,
     ) -> None:
         args = locals()
-        args.pop('self')
+        args.pop("self")
         query = insert(SearchIndexModel).values(**args).on_conflict_do_update()
         await self._session.execute(query)
 
