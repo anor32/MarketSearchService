@@ -24,7 +24,12 @@ class SQLAlchemySearchRepository(SearchRepository):
     ) -> None:
         args = locals()
         args.pop("self")
-        query = insert(SearchIndexModel).values(**args).on_conflict_do_update()
+
+        query = (
+            insert(SearchIndexModel)
+            .values(**args)
+            .on_conflict_do_update(set_=args, index_elements=["ad_id"])
+        )
         await self._session.execute(query)
 
     async def delete(self, ad_id: int) -> None:
